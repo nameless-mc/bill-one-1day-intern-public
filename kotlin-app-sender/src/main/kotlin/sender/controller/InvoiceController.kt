@@ -70,11 +70,15 @@ fun Route.invoiceController() {
             }
             part.dispose()
         }
-        if((recipientUUID != null) && (senderUUID != null) && (pdf != null) && (memo != null)){
-            SenderInvoiceRegisterService.register(InvoiceRegisterArgs(senderUUID!!, recipientUUID!!, memo!!, pdf!!, call.getDomainEventContext()))
-            call.respond(HttpStatusCode.OK)
-        }else{
-            call.respond(HttpStatusCode.BadRequest)
+        try {
+            if((recipientUUID != null) && (senderUUID != null) && (pdf != null) && (memo != null)){
+                SenderInvoiceRegisterService.register(InvoiceRegisterArgs(senderUUID!!, recipientUUID!!, memo!!, pdf!!, call.getDomainEventContext()))
+                call.respond(HttpStatusCode.OK)
+            }else{
+                call.respond(HttpStatusCode.BadRequest)
+            }
+        }catch (e: IllegalArgumentException){
+            call.respond(HttpStatusCode.BadRequest, e.localizedMessage)
         }
     }
 
